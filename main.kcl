@@ -1,0 +1,55 @@
+outerDiameter = 2.16
+innerDiameter = 1.84
+fitTolerance=0.03
+
+finDepth=0.1
+sketch001 = startSketchOn('XY')
+  |> circle({
+       center: [0, 0],
+       radius: outerDiameter
+     }, %)
+sketch002 = startSketchOn('XY')
+  |> circle({
+       center: [-0.01, -0.02],
+       radius: innerDiameter
+     }, %)
+
+ring = sketch001
+  |> hole(sketch002, %)
+
+rocketBody = extrude(10, ring)
+sketch003 = startSketchOn('XZ')
+  |> startProfileAt([2.17, 0.01], %)
+  |> line([2.06, 0.35], %, $seg01)
+  |> tangentialArcTo([4.21, 1.66], %)
+  |> angledLine([172, segLen(seg01)], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+
+sketch004 = startSketchOn('XZ')
+  |> startProfileAt([2.17, 0.01], %)
+  |> line([2.06, 0.35], %, $seg02)
+  |> tangentialArcTo([4.21, 1.66], %)
+  |> angledLine([172, segLen(seg02)], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+
+extrude001=extrude(finDepth, sketch003)
+extrude002=extrude(-finDepth,sketch004)
+
+[extrude001, extrude002]
+  |> patternCircular3d({
+       axis: [0, 0, 1],
+       center: [0, 0, 0],
+       instances: 3,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+
+engineBlockPlane=offsetPlane('XY', 7)
+
+sketch005 = startSketchOn(engineBlockPlane)
+  |> circle({
+       center: [0, 0],
+       radius: innerDiameter-fitTolerance
+     }, %)
