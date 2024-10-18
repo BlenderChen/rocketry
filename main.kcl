@@ -1,32 +1,29 @@
-outer_diameter = 2.16
-inner_diameter = 1.84
+outer_diameter = 2.16 / 2
+inner_diameter = 1.84 / 2
 fin_depth = .1
 fit_tolerance = 0.005
 
-sketch001 = startSketchOn('XY')
-  |> circle({
-       center: [0, 0],
-       radius: outer_diameter
-     }, %)
-sketch002 = startSketchOn('XY')
-  |> circle({
-       center: [0, 0],
-       radius: inner_diameter
-     }, %)
-ring = sketch001
-  |> hole(sketch002, %)
-rocket_body = extrude(10, ring)
+fn ring = (center, od, id) => {
+  outer = startSketchOn('XY')
+    |> circle({ center: center, radius: od }, %)
+  inner = startSketchOn('XY')
+    |> circle({ center: center, radius: id }, %)
+  return outer
+  |> hole(inner, %)
+}
+
+ring001 = ring([0, 0], outer_diameter, inner_diameter)
+rocket_body = extrude(10, ring001)
 
 fn createFin = () => {
-return startSketchOn('XZ')
-  |> startProfileAt([2.18, 0.03], %)
-  |> line([5.03, 0.05], %, $seg01)
-  |> tangentialArcTo([7.37, 1.31], %)
-  |> line([-5.17, 2.86], %)
+  return startSketchOn('XZ')
+  |> startProfileAt([2.18 / 2, 0], %)
+  |> line([5.03 / 2, 0], %, $seg01)
+  |> tangentialArcTo([7.37 / 2, 1.31], %)
+  |> line([-5.17 / 2, 2.86 / 2], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-  }
-  
+}
 extrude001 = extrude(fin_depth, createFin())
 extrude002 = extrude(-fin_depth, createFin())
 fin = [extrude001, extrude002]
@@ -41,9 +38,9 @@ fin
      }, %)
 
 engine_block_height = 7
-engine_block_inner_radius = 1.08 - fit_tolerance
-engine_block_outer_radius = engine_block_inner_radius + 1
-engine_block_handle_radius = 0.324
+engine_block_inner_radius = (1.08 - fit_tolerance) / 2
+engine_block_outer_radius = engine_block_inner_radius + 0.5
+engine_block_handle_radius = 0.324 / 2
 engine_block_handle_sweep_radius = engine_block_inner_radius + (engine_block_outer_radius - engine_block_inner_radius - engine_block_handle_radius) / 2
 
 sketch005 = startSketchOn('XZ')
@@ -51,7 +48,7 @@ sketch005 = startSketchOn('XZ')
        engine_block_inner_radius,
        engine_block_height
      ], %)
-  |> angledLine([0, 0.92], %, $rectangleSegmentA001)
+  |> angledLine([0, 0.92 / 2], %, $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) + 90,
        engine_block_outer_radius
@@ -64,9 +61,23 @@ sketch005 = startSketchOn('XZ')
   |> close(%)
 
 engine_block_ring = revolve({ axis: 'y' }, sketch005)
+
+guide_rail_radius = 0.381
+guide_rail_thickness = 0.1
+guide_rail_sweep_start = 210
+guide_rail_sweep = 205.71
+
 sketch006 = startSketchOn(engine_block_ring, rectangleSegmentC001)
   |> circle({
        center: [engine_block_handle_sweep_radius, 0],
        radius: engine_block_handle_radius
      }, %)
 engine_block_handle = revolve({ axis: 'y', angle: -180 }, sketch006)
+
+sketch001 = startSketchOn(engine_block_ring, rectangleSegmentC001)
+  |> startProfileAt([1.7, -1.06], %)
+  |> arc({
+       angleStart: guide_rail_sweep_start,
+       angleEnd: guide_rail_sweep_start + guide_rail_sweep,
+       radius: guide_rail_radius
+     }, %)
