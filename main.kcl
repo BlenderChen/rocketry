@@ -15,12 +15,13 @@ fn ring = (center, od, id) => {
 ring001 = ring([0, 0], outer_diameter, inner_diameter)
 rocket_body = extrude(10, ring001)
 
+
 fn createFin = () => {
-  return startSketchOn('XZ')
+  return startSketchOn('YZ')
   |> startProfileAt([2.18 / 2, 0], %)
   |> line([5.03 / 2, 0], %, $seg01)
   |> tangentialArcTo([7.37 / 2, 1.31], %)
-  |> line([-5.17 / 2, 2.86 / 2], %)
+  |> line([-5.5 / 2, 2.86 / 2], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 }
@@ -63,9 +64,14 @@ sketch005 = startSketchOn('XZ')
 engine_block_ring = revolve({ axis: 'y' }, sketch005)
 
 guide_rail_radius = 0.381
-guide_rail_thickness = 0.1
-guide_rail_sweep_start = 210
-guide_rail_sweep = 205.71
+guide_rail_thickness = .1
+guide_rail_sweep_start = 278
+guide_rail_start_point = [1.08, 0.0]
+
+guide_rail_sweep = 225.71
+guide_rail_sweep_inner_start = -80
+guide_rail_sweep_inner = 225.309
+guide_rail_start_point_inner = [1.064, 0.1875]
 
 sketch006 = startSketchOn(engine_block_ring, rectangleSegmentC001)
   |> circle({
@@ -74,10 +80,40 @@ sketch006 = startSketchOn(engine_block_ring, rectangleSegmentC001)
      }, %)
 engine_block_handle = revolve({ axis: 'y', angle: -180 }, sketch006)
 
-sketch001 = startSketchOn(engine_block_ring, rectangleSegmentC001)
-  |> startProfileAt([1.7, -1.06], %)
-  |> arc({
-       angleStart: guide_rail_sweep_start,
-       angleEnd: guide_rail_sweep_start + guide_rail_sweep,
-       radius: guide_rail_radius
-     }, %)
+guide_rail_length = -3
+
+
+// TODO: this feature is unrepresentable until SSI
+// outer = startSketchOn(engine_block_ring, rectangleSegmentC001)
+//   |> startProfileAt(guide_rail_start_point, %)
+//   |> arc({
+//        angleStart: guide_rail_sweep_start,
+//        angleEnd: guide_rail_sweep_start + guide_rail_sweep,
+//        radius: guide_rail_radius + guide_rail_thickness * 2
+//      }, %)
+//   |> angledLine({
+//        angle: -48,
+//        length: guide_rail_radius / 2
+//      }, %)
+//   |> angledLine({
+//        angle: -43,
+//        length: guide_rail_radius / 2
+//      }, %)
+//   |> line([0.07, -0.12], %)
+//   |> close(%)
+// inner = startSketchOn(engine_block_ring, rectangleSegmentC001)
+//   |> startProfileAt(guide_rail_start_point_inner, %)
+//   |> arc({
+//        angleStart: guide_rail_sweep_inner_start,
+//        angleEnd: guide_rail_sweep_inner_start + guide_rail_sweep_inner,
+//        radius: guide_rail_radius
+//      }, %)
+//   |> line([0.15, -0.11], %)
+//   |> angledLine({
+//        angle: -59,
+//        length: (guide_rail_radius + 2 * guide_rail_thickness) / 2
+//      }, %)
+//   |> close(%)
+// guide_rail_region = outer
+//   |> hole(inner, %)
+// cut001 = extrude(guide_rail_length, guide_rail_region)
