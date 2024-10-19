@@ -17,7 +17,7 @@ rocket_body = extrude(10, ring001)
 
 
 fn createFin = () => {
-  return startSketchOn('YZ')
+  return startSketchOn('XZ')
   |> startProfileAt([2.18 / 2, 0], %)
   |> line([5.03 / 2, 0], %, $seg01)
   |> tangentialArcTo([7.37 / 2, 1.31], %)
@@ -117,3 +117,30 @@ guide_rail_length = -3
 // guide_rail_region = outer
 //   |> hole(inner, %)
 // cut001 = extrude(guide_rail_length, guide_rail_region)
+
+radius_outer = outer_diameter
+lug_size = 0.5
+lug_width = 1
+
+startSketchOn("XY")
+|> circle({
+  center: [0, 0],
+  radius: radius_outer,
+}, %)
+
+startSketchOn(offsetPlane("XY", 7))
+|> startProfileAt([0, radius_outer+lug_size], %)
+|> xLineTo(0.0000001, %)
+|> tangentialArcTo([lug_width/2, sqrt(radius_outer^2-(lug_width/2)^2)], %)
+|> mirror2d({
+  axis: "Y",
+}, %)
+
+startSketchOn(offsetPlane("XY", 7))
+|> startProfileAt([0, radius_outer +lug_size/2], %)
+|> xLineTo(0.0000001, %)
+|> tangentialArcTo([(lug_width-1)/2, sqrt((radius_outer-0.5/2)^2-((lug_width-0.25)/2)^2)], %)
+|> mirror2d({
+  axis: "Y",
+}, %)
+

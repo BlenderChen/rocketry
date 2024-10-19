@@ -1,0 +1,22 @@
+
+
+sketch002 = startSketchOn('XZ')
+  |> startProfileAt([0.262, 0.596-0.95], %)
+  |> line([0.1, 0], %)
+  |> line([0, 0.354], %)
+  |> line([0.13, 0], %)
+  |>  bezierCurve({
+  to: [-lastSegX(%)+0.000001, 1.024],
+  control1: [0, 0.5],
+  control2: [-0.25, 0.8],
+}, %)
+  |> line([0,-0.08], %)
+  |>  bezierCurve({
+  to: profileStart(%),
+  control1: [0.1, -0.1],
+  control2: [0.2, -0.25],
+}, %)
+|> close(%)
+|> revolve({
+  axis: 'Y'
+}, %)
